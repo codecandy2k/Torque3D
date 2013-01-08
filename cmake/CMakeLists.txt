@@ -1,4 +1,7 @@
-find_package(PhysX REQUIRED)
+if (T3D_USE_PHYSX)
+   find_package(PhysX REQUIRED)
+endif(T3D_USE_PHYSX)
+
 
 include_directories(${T3D_ENGINE_LIB_DIR})
 

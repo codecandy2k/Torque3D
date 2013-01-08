@@ -23,16 +23,21 @@ endmacro(t3d_dll)
 
 #finish and commit the creation of the main engine DLL. Copies the output DLL to the staging directory.
 macro(t3d_end_dll)
-	add_library(${T3D_LIBRARY_NAME} SHARED ${T3D_SRC_ALL} ${T3D_ENGINE_LIB_DIR}/Torque3D/msvc/torque3d.def)
+   foreach(folder in ${T3D_FOLDERS})
+      t3d_src_add_folder("${folder}")
+   endforeach()
 
-	get_property(T3D_DLL_LOCATION TARGET ${T3D_LIBRARY_NAME} PROPERTY LOCATION)
+   add_library(${T3D_LIBRARY_NAME} SHARED ${T3D_SRC_ALL} ${T3D_ENGINE_LIB_DIR}/Torque3D/msvc/torque3d.def)
 
-	target_link_libraries(${T3D_LIBRARY_NAME} ${T3D_TARGET_LIBS} )
+   get_property(T3D_DLL_LOCATION TARGET ${T3D_LIBRARY_NAME} PROPERTY LOCATION)
 
-	add_custom_command(
-		TARGET ${T3D_LIBRARY_NAME}
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy "${T3D_DLL_LOCATION}" "${T3D_STAGE_DIR}/${T3D_PROJECT_NAME}.dll" )
+   target_link_libraries(${T3D_LIBRARY_NAME} ${T3D_TARGET_LIBS} )
+
+   add_custom_command(
+      TARGET ${T3D_LIBRARY_NAME}
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy "${T3D_DLL_LOCATION}" "${T3D_STAGE_DIR}/${T3D_PROJECT_NAME}.dll" )
+
 endmacro(t3d_end_dll)
 
 
@@ -47,14 +52,18 @@ endmacro(t3d_lib_folder)
 
 #adds all .h, .c, .cpp and .cc files to the currently active engine module
 macro(t3d_src_folder folder_name)
-   file(GLOB SRC_FOLDER "${T3D_FOLDER_BASE}/${folder_name}/*.h" "${T3D_FOLDER_BASE}/${folder_name}/*.cpp" "${T3D_FOLDER_BASE}/${folder_name}/*.c" "${T3D_FOLDER_BASE}/${folder_name}/*.cc")
-   list(APPEND T3D_SRC_ALL ${SRC_FOLDER})
-
-   file(TO_NATIVE_PATH "src/${folder_name}" SRC_GROUP)
-   source_group(${SRC_GROUP} FILES ${SRC_FOLDER})
-
-   set(T3D_SRC_ALL "${T3D_SRC_ALL}" PARENT_SCOPE)
+   list(APPEND T3D_FOLDERS ${folder_name})
+   set(T3D_FOLDERS "${T3D_FOLDERS}" PARENT_SCOPE)
 endmacro(t3d_src_folder)
+
+macro(t3d_src_add_folder folder_name)
+   file(GLOB SRC_FOLDER "${T3D_FOLDER_BASE}/${folder_name}/*.h" "${T3D_FOLDER_BASE}/${folder_name}/*.cpp" "${T3D_FOLDER_BASE}/${folder_name}/*.c" "${T3D_FOLDER_BASE}/${folder_name}/*.cc")
+   file(TO_NATIVE_PATH "Source Files/${folder_name}" SRC_GROUP)
+   SOURCE_GROUP(${SRC_GROUP} FILES ${SRC_FOLDER})
+
+   list(APPEND T3D_SRC_ALL ${SRC_FOLDER})
+   set(T3D_SRC_ALL "${T3D_SRC_ALL}" PARENT_SCOPE)
+endmacro(t3d_src_add_folder)
 
 #adds a library dependency to the currently active target
 macro(t3d_add_lib lib_name)
