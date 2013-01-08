@@ -1,0 +1,5 @@
+t3d_src_folder(environment/editors)
+t3d_src_folder(forest/editor)
+t3d_src_folder(gui/editor)
+t3d_src_folder(gui/editor/inspector)
+t3d_src_folder(gui/worldEditor)
